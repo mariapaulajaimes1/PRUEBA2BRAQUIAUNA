@@ -1,4 +1,3 @@
-import os
 import io
 import zipfile
 import tempfile
@@ -88,7 +87,20 @@ if img is not None:
     mn, mx = float(img.min()), float(img.max())
     default_ww, default_wc = mx-mn, mn + (mx-mn)/2
 
-   
+    # Seleccionar cortes
+    sync = st.sidebar.checkbox('Sincronizar cortes', value=True)
+    if sync:
+        corte = st.sidebar.radio('Corte (sincronizado)', ('Axial','Coronal','Sagital'))
+        lims = {'Axial':n_ax-1,'Coronal':n_cor-1,'Sagital':n_sag-1}
+        mids = {'Axial':n_ax//2,'Coronal':n_cor//2,'Sagital':n_sag//2}
+        idx_slider = st.sidebar.slider('Corte (sincronizado)', 0, lims[corte], mids[corte])
+        slice_idx = st.sidebar.number_input('Corte (sincronizado)', 0, lims[corte], idx_slider)
+    else:
+        corte = st.sidebar.radio('Selecciona el tipo de corte', ('Axial','Coronal','Sagital'))
+        if corte=='Axial': slice_idx = st.sidebar.slider('Índice Axial', 0, n_ax-1, n_ax//2)
+        if corte=='Coronal': slice_idx = st.sidebar.slider('Índice Coronal', 0, n_cor-1, n_cor//2)
+        if corte=='Sagital': slice_idx = st.sidebar.slider('Índice Sagital', 0, n_sag-1, n_sag//2)
+
     # Opciones adicionales
     show_3d = st.sidebar.checkbox('Mostrar visualización 3D', value=True)
     invert = st.sidebar.checkbox('Invertir colores (Negativo)', value=False)
